@@ -27,6 +27,7 @@ public final class FunkyPathfindingPanel extends JPanel {
     private Color wallColor   = DEFAULT_WALL_COLOR;
     private Color sourceColor = Configuration.DEFAULT_SOURCE_COLOR;
     private Color targetColor = Configuration.DEFAULT_TARGET_COLOR;
+    private DrawingMode drawingMode = DrawingMode.SET_WALL;
     
     public FunkyPathfindingPanel(int width, 
                                  int height) {
@@ -54,6 +55,16 @@ public final class FunkyPathfindingPanel extends JPanel {
         
         addMouseListener(mouseAdapter);
         addMouseMotionListener(mouseAdapter);
+    }
+    
+    public void setDrawingMode(DrawingMode drawingMode) {
+        this.drawingMode = 
+                Objects.requireNonNull(drawingMode, 
+                                       "The input drawing mode is null.");
+    }
+    
+    public DrawingMode getDrawingMode() {
+        return drawingMode;
     }
     
     public void setWorldColor(Color worldColor) {
@@ -96,6 +107,63 @@ public final class FunkyPathfindingPanel extends JPanel {
         targetPoint.x = x;
         targetPoint.y = y;
         paintPoint(x, y, targetColor);
+    }
+    
+    public void clearAllWalls() {
+        for (int y = 0; y < gridGraphData.length; ++y) {
+            for (int x = 0; x < gridGraphData[0].length; ++x) {
+                gridGraphData[y][x] = IS_TRAVERSABLE;
+            }
+        }
+        
+        repaint();
+    }
+    
+    public void draw(int x, int y) {
+        switch (drawingMode) {
+            case SET_WALL:
+                drawWall(x, y);
+                break;
+                
+            case REMOVE_WALL:
+                drawWorld(x, y);
+                break;
+                
+            default:
+                throw new IllegalStateException(
+                        "Unknown drawing mode: " + drawingMode);
+        }
+    }
+    
+    private void draw(int x, int y, Color color, boolean traversability) {
+        int halfWidth  = POINT_RECTANGLE_WIDTH_HEIGHT / 2;
+        int halfHeight = POINT_RECTANGLE_WIDTH_HEIGHT / 2;
+        int startX = x - halfWidth;
+        int startY = y - halfHeight;
+        
+        for (int yy = 0; yy < POINT_RECTANGLE_WIDTH_HEIGHT; ++yy) {
+            if (startY + yy < 0 || startY + yy >= height) {
+                continue;
+            }
+            
+            for (int xx = 0; xx < POINT_RECTANGLE_WIDTH_HEIGHT; ++xx) {
+                if (startX + xx < 0 || startX + xx >= width) {
+                    continue;
+                }
+                
+                setPixel(startX + xx, startY + yy, color);
+                gridGraphData[startY + yy][startX + xx] = traversability;
+            }
+        }
+        
+    }
+    
+    private void drawWall(int x, int y) {
+        draw(x, y, wallColor, IS_WALL);
+    }
+    
+    private void drawWorld(int x, int y) {
+        draw(x, y, worldColor, IS_TRAVERSABLE);
     }
     
     @Override

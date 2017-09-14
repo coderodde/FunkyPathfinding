@@ -49,8 +49,9 @@ implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        Point point = e.getPoint();
+        
         if (currentPoint != null) {
-            Point point = e.getPoint();
             currentPoint.x = point.x;
             currentPoint.y = point.y;
             
@@ -60,6 +61,9 @@ implements MouseListener, MouseMotionListener {
                 funkyPathfindingPanel.setTarget(currentPoint.x, currentPoint.y);
             }
             
+            funkyPathfindingPanel.repaint();
+        } else {
+            funkyPathfindingPanel.draw(point.x, point.y);
             funkyPathfindingPanel.repaint();
         }
     }
