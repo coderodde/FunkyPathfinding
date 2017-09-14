@@ -25,4 +25,12 @@ public final class Utils {
         
         return height;
     }
+    
+    static void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException ex) {
+            
+        }
+    }
 }

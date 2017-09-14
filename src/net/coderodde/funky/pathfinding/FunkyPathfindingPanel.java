@@ -1,11 +1,18 @@
 package net.coderodde.funky.pathfinding;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics;;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.swing.JPanel;
+import static net.coderodde.funky.pathfinding.Configuration.DEFAULT_CLOSED_COLOR;
+import static net.coderodde.funky.pathfinding.Configuration.DEFAULT_FRONTIER_COLOR;
+import static net.coderodde.funky.pathfinding.Configuration.DEFAULT_PATH_COLOR;
+import static net.coderodde.funky.pathfinding.Configuration.DEFAULT_SOURCE_COLOR;
+import static net.coderodde.funky.pathfinding.Configuration.DEFAULT_TARGET_COLOR;
 import static net.coderodde.funky.pathfinding.Configuration.DEFAULT_WALL_COLOR;
 import static net.coderodde.funky.pathfinding.Utils.*;
 import static net.coderodde.funky.pathfinding.Configuration.DEFAULT_WORLD_COLOR;
@@ -23,10 +30,13 @@ public final class FunkyPathfindingPanel extends JPanel {
     private final Point targetPoint;
     private final boolean[][] gridGraphData;
     
-    private Color worldColor  = DEFAULT_WORLD_COLOR;
-    private Color wallColor   = DEFAULT_WALL_COLOR;
-    private Color sourceColor = Configuration.DEFAULT_SOURCE_COLOR;
-    private Color targetColor = Configuration.DEFAULT_TARGET_COLOR;
+    private Color worldColor    = DEFAULT_WORLD_COLOR;
+    private Color wallColor     = DEFAULT_WALL_COLOR;
+    private Color sourceColor   = DEFAULT_SOURCE_COLOR;
+    private Color targetColor   = DEFAULT_TARGET_COLOR;
+    private Color closedColor   = DEFAULT_CLOSED_COLOR;
+    private Color frontierColor = DEFAULT_FRONTIER_COLOR;
+    private Color pathColor     = DEFAULT_PATH_COLOR;
     private DrawingMode drawingMode = DrawingMode.SET_WALL;
     
     public FunkyPathfindingPanel(int width, 
@@ -57,6 +67,21 @@ public final class FunkyPathfindingPanel extends JPanel {
         addMouseMotionListener(mouseAdapter);
     }
     
+    public List<Point> expand(Point point) {
+        int x = point.x;
+        int y = point.y;
+        List<Point> list = new ArrayList<>(8);
+        list.add(new Point(x - 1, y - 1));
+        list.add(new Point(x - 1, y));
+        list.add(new Point(x - 1, y + 1));
+        list.add(new Point(x, y - 1));
+        list.add(new Point(x, y + 1));
+        list.add(new Point(x + 1, y - 1));
+        list.add(new Point(x + 1, y));
+        list.add(new Point(x + 1, y + 1));
+        return pruneNeighborList(list);
+    }
+    
     public void setDrawingMode(DrawingMode drawingMode) {
         this.drawingMode = 
                 Objects.requireNonNull(drawingMode, 
@@ -85,6 +110,22 @@ public final class FunkyPathfindingPanel extends JPanel {
     public void setTargetColor(Color targetColor) {
         this.targetColor = Objects.requireNonNull(targetColor, 
                                                   "The target color is null.");
+    }
+    
+    public void setFrontierColor(Color frontierColor) {
+        this.frontierColor = 
+                Objects.requireNonNull(frontierColor, 
+                                       "The frontier color is null.");
+    }
+    
+    public void setClosedColor(Color closedColor) {
+        this.closedColor = Objects.requireNonNull(closedColor, 
+                                                  "The closed color is null.");
+    }
+    
+    public void setPathColor(Color pathColor) {
+        this.pathColor = Objects.requireNonNull(pathColor, 
+                                                "The path color is null.");
     }
     
     public void setWall(int x, int y) {
@@ -183,6 +224,18 @@ public final class FunkyPathfindingPanel extends JPanel {
         g.drawImage(bufferedImage, 0, 0, null);
     }
     
+    public void markAsClosed(Point point) {
+        setPixel(point.x, point.y, closedColor);
+    }
+    
+    public void markAsFrontier(Point point) {
+        setPixel(point.x, point.y, frontierColor);
+    }
+    
+    public void markAsPath(Point point) {
+        setPixel(point.x, point.y, pathColor);
+    }
+    
     Point getSourcePoint() {
         return sourcePoint;
     }
@@ -222,5 +275,27 @@ public final class FunkyPathfindingPanel extends JPanel {
                 setPixel(startX + xx, startY + yy, color);
             }
         }
+    }
+    
+    private List<Point> pruneNeighborList(List<Point> list) {
+        List<Point> prunedList = new ArrayList<>(8);
+        
+        for (Point point : list) {
+            if (point.x < 0 || point.x >= width) {
+                continue;
+            }
+            
+            if (point.y < 0 || point.y >= height) {
+                continue;
+            }
+            
+            if (gridGraphData[point.y][point.x] == IS_WALL) {
+                continue;
+            }
+            
+            prunedList.add(point);
+        }
+        
+        return prunedList;
     }
 }
