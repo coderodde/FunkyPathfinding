@@ -47,8 +47,8 @@ public final class FunkyPathfindingPanel extends JPanel {
             }
         }
         
-        setSource(0, 0);
-        setTarget(width / 2, height / 2);
+        setSource(width / 10, height / 10);
+        setTarget(9 * width / 10, 9 * height / 10);
         
         FunkyPathfindingPanelMouseAdapter mouseAdapter = 
                 new FunkyPathfindingPanelMouseAdapter(this);

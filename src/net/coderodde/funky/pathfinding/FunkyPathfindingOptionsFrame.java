@@ -3,13 +3,13 @@ package net.coderodde.funky.pathfinding;
 
 import java.awt.GridLayout;
 import java.awt.Label;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 public final class FunkyPathfindingOptionsFrame extends JDialog {
 
@@ -47,28 +47,21 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent ev) {
-                
-            }
-        });
+        buttonDrawWalls.setEnabled(false);
+        buttonStop.setEnabled(false);
+        buttonReset.setEnabled(false);
         
-        this.buttonDrawWalls.addActionListener((e) -> {
-            funkyPathfindingPanel.setDrawingMode(DrawingMode.SET_WALL);
-        });
-        
-        this.buttonDrawWorld.addActionListener((e) -> {
-            funkyPathfindingPanel.setDrawingMode(DrawingMode.REMOVE_WALL);
-        });
-        
-        this.buttonClear.addActionListener((e) -> {
-            funkyPathfindingPanel.clearAllWalls();
-        });
+        setButtonActionListeners();
         
         GridLayout layout = new GridLayout(9, 1);   
         setLayout(layout);
+        addButtons();
         
+        pack();
+        setVisible(true);
+    }
+    
+    private void addButtons() {
         getContentPane().add(buttonDrawWorld);
         getContentPane().add(buttonDrawWalls);
         getContentPane().add(buttonClear);
@@ -76,10 +69,46 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         getContentPane().add(buttonRun);
         getContentPane().add(buttonStop);
         getContentPane().add(buttonReset);
-        getContentPane().add(new Label("Choose algorithm"));
+        getContentPane().add(new JLabel("Choose algorithm:", 
+                                        SwingConstants.CENTER));
         getContentPane().add(comboBoxAlgorithm);
+    }
+    
+    private void setButtonActionListeners() {
+        this.buttonDrawWalls.addActionListener((e) -> {
+            this.buttonDrawWalls.setEnabled(false);
+            this.buttonDrawWorld.setEnabled(true);
+            this.buttonDrawWorld.setFocusable(true);
+            funkyPathfindingPanel.setDrawingMode(DrawingMode.SET_WALL);
+        });
         
-        pack();
-        setVisible(true);
+        this.buttonDrawWorld.addActionListener((e) -> {
+            this.buttonDrawWorld.setEnabled(false);
+            this.buttonDrawWalls.setEnabled(true);
+            this.buttonDrawWalls.setFocusable(true);
+            funkyPathfindingPanel.setDrawingMode(DrawingMode.REMOVE_WALL);
+        });
+        
+        this.buttonClear.addActionListener((e) -> {
+            funkyPathfindingPanel.clearAllWalls();
+        });
+        
+        this.buttonRun.addActionListener((e) -> {
+            this.buttonRun.setEnabled(false);
+            this.buttonStop.setEnabled(true);
+            this.buttonReset.setEnabled(true);
+        });
+        
+        this.buttonReset.addActionListener((e) -> {
+            this.buttonRun.setEnabled(true);
+            this.buttonStop.setEnabled(false);
+            this.buttonReset.setEnabled(false);
+        });
+        
+        this.buttonStop.addActionListener((e) -> {
+            this.buttonRun.setEnabled(true);
+            this.buttonStop.setEnabled(false);
+            this.buttonReset.setEnabled(true);
+        });
     }
 }
