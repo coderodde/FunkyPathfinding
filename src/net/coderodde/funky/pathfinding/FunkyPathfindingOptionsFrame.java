@@ -1,7 +1,10 @@
+
 package net.coderodde.funky.pathfinding;
 
 import java.awt.GridLayout;
 import java.awt.Label;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -42,6 +45,15 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         this.buttonStop        = new JButton("Stop");
         this.buttonReset       = new JButton("Reset");
         
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent ev) {
+                
+            }
+        });
+        
         this.buttonDrawWalls.addActionListener((e) -> {
             funkyPathfindingPanel.setDrawingMode(DrawingMode.SET_WALL);
         });
@@ -64,7 +76,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         getContentPane().add(buttonRun);
         getContentPane().add(buttonStop);
         getContentPane().add(buttonReset);
-        getContentPane().add(new Label());
+        getContentPane().add(new Label("Choose algorithm"));
         getContentPane().add(comboBoxAlgorithm);
         
         pack();
