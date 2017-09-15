@@ -74,7 +74,13 @@ public final class FunkyPathfindingPanel extends JPanel {
                                                          sourcePoint, 
                                                          targetPoint);
         pathfinder.setPanel(this);
-        this.currentThread.start();
+        
+        try {
+            this.currentThread.start();
+        } catch (TargetNotReachableException ex) {
+            
+        }
+            
     }
     
     public List<Point> expand(Point point) {
@@ -217,18 +223,40 @@ public final class FunkyPathfindingPanel extends JPanel {
         draw(x, y, worldColor, IS_TRAVERSABLE);
     }
     
+    public void reset() {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                setPixel(x, y, gridGraphData[y][x] == IS_TRAVERSABLE ?
+                        worldColor :
+                        wallColor);
+            }
+        }
+        
+        repaint();
+    }
+    
+    public void togglePause() {
+        if (currentThread != null) {
+            currentThread.togglePause();
+        }
+    }
+    
+    public void requestExit() {
+        if (currentThread != null) {
+            currentThread.halt();
+            
+            try {
+                currentThread.join();
+            } catch (InterruptedException ex) {
+                
+            }
+            
+            currentThread = null;
+        }
+    }
+    
     @Override
     public void paintComponent(Graphics g) {
-//        for (int y = 0; y < height; ++y) {
-//            for (int x = 0; x < width; ++x) {
-//                setPixel(x,
-//                         y,
-//                         gridGraphData[y][x] == IS_TRAVERSABLE ? 
-//                                 worldColor : 
-//                                 wallColor);
-//            }
-//        }
-        
         setSource(sourcePoint.x, sourcePoint.y);
         setTarget(targetPoint.x, targetPoint.y);
         g.drawImage(bufferedImage, 0, 0, null);

@@ -13,7 +13,7 @@ import static net.coderodde.funky.pathfinding.Configuration.NODES_EXPANSIONS_PER
 public final class AStarPathfinder extends AbstractPathfinder {
 
     @Override
-    public List<Point> search(Point sourcePoint, Point targetPoint) {
+    public void search(Point sourcePoint, Point targetPoint) {
         Objects.requireNonNull(sourcePoint, "The source point is null.");
         Objects.requireNonNull(targetPoint, "The target point is null.");
         
@@ -29,21 +29,20 @@ public final class AStarPathfinder extends AbstractPathfinder {
         
         while (open.size() > 0) {
             if (pause) {
-                System.out.println("Pause on...");
                 sleep();
                 continue;
             }
             
             if (exit) {
-                System.out.println("Exiting...");
-                return null;
+                return;
             }
             
             Point currentPoint = open.extractMinimum();
             panel.markAsClosed(currentPoint);
             
             if (currentPoint.equals(targetPoint)) {
-                return tracebackPath(targetPoint, parents);
+//                return tracebackPath(targetPoint, parents);
+                return;
             }
             
             closed.add(currentPoint);

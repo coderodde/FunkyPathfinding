@@ -17,7 +17,7 @@ public abstract class AbstractPathfinder {
         this.panel = panel;
     }
     
-    public abstract List<Point> search(Point source, Point target);
+    public abstract void search(Point source, Point target);
     
     public void togglePause() {
         pause = !pause;

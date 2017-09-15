@@ -3,6 +3,8 @@ package net.coderodde.funky.pathfinding;
 
 import java.awt.GridLayout;
 import java.awt.Label;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,7 +19,6 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
     private final JButton buttonDrawWalls;
     private final JButton buttonClear;
     private final JButton buttonRun;
-    private final JButton buttonStop;
     private final JButton buttonReset;
     private final String[] comboBoxOptions = { "A*", 
                                                "NBA*", 
@@ -41,19 +42,17 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         this.buttonDrawWalls   = new JButton("Draw walls");
         this.buttonDrawWorld   = new JButton("Erase walls");
         this.buttonClear       = new JButton("Clear all walls");
-        this.buttonRun         = new JButton("Run");
-        this.buttonStop        = new JButton("Stop");
+        this.buttonRun         = new JButton("Start");
         this.buttonReset       = new JButton("Reset");
         
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
         buttonDrawWalls.setEnabled(false);
-        buttonStop.setEnabled(false);
         buttonReset.setEnabled(false);
         
         setButtonActionListeners();
         
-        GridLayout layout = new GridLayout(9, 1);   
+        GridLayout layout = new GridLayout(8, 1);   
         setLayout(layout);
         addButtons();
         
@@ -67,7 +66,6 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         getContentPane().add(buttonClear);
         getContentPane().add(new Label());
         getContentPane().add(buttonRun);
-        getContentPane().add(buttonStop);
         getContentPane().add(buttonReset);
         getContentPane().add(new JLabel("Choose algorithm:", 
                                         SwingConstants.CENTER));
@@ -95,22 +93,18 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         
         this.buttonRun.addActionListener((e) -> {
             this.buttonRun.setEnabled(false);
-            this.buttonStop.setEnabled(true);
             this.buttonReset.setEnabled(true);
+            
             
             funkyPathfindingPanel.search(new AStarPathfinder());
         });
         
         this.buttonReset.addActionListener((e) -> {
             this.buttonRun.setEnabled(true);
-            this.buttonStop.setEnabled(false);
             this.buttonReset.setEnabled(false);
-        });
-        
-        this.buttonStop.addActionListener((e) -> {
-            this.buttonRun.setEnabled(true);
-            this.buttonStop.setEnabled(false);
-            this.buttonReset.setEnabled(true);
+            
+            funkyPathfindingPanel.requestExit();
+            funkyPathfindingPanel.reset();
         });
     }
 }
