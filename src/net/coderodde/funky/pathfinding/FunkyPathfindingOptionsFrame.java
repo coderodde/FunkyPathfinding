@@ -1,10 +1,7 @@
-
 package net.coderodde.funky.pathfinding;
 
 import java.awt.GridLayout;
 import java.awt.Label;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -15,16 +12,23 @@ import javax.swing.SwingConstants;
 
 public final class FunkyPathfindingOptionsFrame extends JDialog {
 
+    private static final String ASTAR_NAME      = "A*";
+    private static final String NBASTAR_NAME    = "NBA*";
+    private static final String PHBA_NAME       = "PHBA";
+    private static final String DIJKSTRA_NAME   = "Dijkstra";
+    private static final String BIDIJKSTRA_NAME = "Bidirectional Dijkstra";
+    
     private final JButton buttonDrawWorld;
     private final JButton buttonDrawWalls;
     private final JButton buttonClear;
     private final JButton buttonRun;
     private final JButton buttonReset;
-    private final String[] comboBoxOptions = { "A*", 
-                                               "NBA*", 
-                                               "PHBA",
-                                               "Dijkstra", 
-                                               "Bidirectional Dijkstra" 
+    private final String[] comboBoxOptions = {
+                            ASTAR_NAME,
+                            NBASTAR_NAME,
+                            PHBA_NAME,
+                            DIJKSTRA_NAME,
+                            BIDIJKSTRA_NAME 
     };
     
     private final JComboBox comboBoxAlgorithm;
@@ -96,7 +100,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             this.buttonReset.setEnabled(true);
             
             
-            funkyPathfindingPanel.search(new AStarPathfinder());
+            funkyPathfindingPanel.search(getPathfinderFromSelection());
         });
         
         this.buttonReset.addActionListener((e) -> {
@@ -106,5 +110,19 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             funkyPathfindingPanel.requestExit();
             funkyPathfindingPanel.reset();
         });
+    }
+    
+    private AbstractPathfinder getPathfinderFromSelection() {
+        switch ((String) comboBoxAlgorithm.getSelectedItem()) {
+            case ASTAR_NAME:
+                return new AStarPathfinder();
+                
+            case DIJKSTRA_NAME:
+                return new DijkstraPathfinder();
+                
+            default:
+                throw new UnsupportedOperationException(
+                        "Unknown pathfinder name.");
+        }
     }
 }
