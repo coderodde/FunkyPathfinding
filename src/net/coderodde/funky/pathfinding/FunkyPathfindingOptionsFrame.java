@@ -98,7 +98,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             this.buttonStop.setEnabled(true);
             this.buttonReset.setEnabled(true);
             
-            
+            funkyPathfindingPanel.search(new AStarPathfinder());
         });
         
         this.buttonReset.addActionListener((e) -> {

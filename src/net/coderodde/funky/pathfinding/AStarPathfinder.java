@@ -1,6 +1,7 @@
 package net.coderodde.funky.pathfinding;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ public final class AStarPathfinder extends AbstractPathfinder {
         Set<Point> closed = new HashSet<>();
         Map<Point, Point> parents = new HashMap<>();
         Map<Point, Double> distances = new HashMap<>();
+        List<Point> previousPartialPath = new ArrayList<>();
         
         open.add(sourcePoint, 0.0);
         parents.put(sourcePoint, null);
@@ -47,7 +49,18 @@ public final class AStarPathfinder extends AbstractPathfinder {
             closed.add(currentPoint);
             
             if (closed.size() % NODES_EXPANSIONS_PER_REPAINT == 0) {
+                for (Point p : previousPartialPath) {
+                    panel.markAsClosed(p);
+                }
                 
+                List<Point> partialPath = tracebackPath(open.top(), parents);
+                
+                for (Point p : partialPath) {
+                    panel.markAsPath(p);
+                }
+                
+                previousPartialPath = partialPath;
+                panel.repaint();
             }
             
             for (Point childPoint : panel.expand(currentPoint)) {
@@ -59,6 +72,7 @@ public final class AStarPathfinder extends AbstractPathfinder {
                                            currentPoint.distance(childPoint);
                 
                 if (!distances.containsKey(childPoint)) {
+                    panel.markAsFrontier(childPoint);
                     open.add(childPoint, 
                              tentativeDistance + 
                                      childPoint.distance(targetPoint));

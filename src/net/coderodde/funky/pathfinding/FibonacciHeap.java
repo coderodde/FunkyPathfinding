@@ -126,6 +126,15 @@ public final class FibonacciHeap<E, P extends Comparable<? super P>> {
         map.put(element, node);
         ++size;
     }
+    
+    public E top() {
+        if (size == 0) {
+            throw new NoSuchElementException(
+                    "Asking for top element of an empty FibonacciHeap.");
+        }
+        
+        return minimumNode.element;
+    }
 
     public boolean decreasePriority(E element, P newPriority) {
         FibonacciHeapNode<E, P> targetNode = map.get(element);

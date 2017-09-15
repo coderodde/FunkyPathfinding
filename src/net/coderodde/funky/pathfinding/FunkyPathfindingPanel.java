@@ -39,6 +39,8 @@ public final class FunkyPathfindingPanel extends JPanel {
     private Color pathColor     = DEFAULT_PATH_COLOR;
     private DrawingMode drawingMode = DrawingMode.SET_WALL;
     
+    private PathfinderRunningThread currentThread;
+    
     public FunkyPathfindingPanel(int width, 
                                  int height) {
         this.width = checkWidth(width);
@@ -65,6 +67,14 @@ public final class FunkyPathfindingPanel extends JPanel {
         
         addMouseListener(mouseAdapter);
         addMouseMotionListener(mouseAdapter);
+    }
+    
+    public void search(AbstractPathfinder pathfinder) {
+        this.currentThread = new PathfinderRunningThread(pathfinder, 
+                                                         sourcePoint, 
+                                                         targetPoint);
+        pathfinder.setPanel(this);
+        this.currentThread.start();
     }
     
     public List<Point> expand(Point point) {
@@ -209,15 +219,15 @@ public final class FunkyPathfindingPanel extends JPanel {
     
     @Override
     public void paintComponent(Graphics g) {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                setPixel(x,
-                         y,
-                         gridGraphData[y][x] == IS_TRAVERSABLE ? 
-                                 worldColor : 
-                                 wallColor);
-            }
-        }
+//        for (int y = 0; y < height; ++y) {
+//            for (int x = 0; x < width; ++x) {
+//                setPixel(x,
+//                         y,
+//                         gridGraphData[y][x] == IS_TRAVERSABLE ? 
+//                                 worldColor : 
+//                                 wallColor);
+//            }
+//        }
         
         setSource(sourcePoint.x, sourcePoint.y);
         setTarget(targetPoint.x, targetPoint.y);
