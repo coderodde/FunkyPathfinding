@@ -3,13 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/AStarTemplatePathfinder.java</file>
             <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/TargetNotReachableException.java</file>
+            <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/FunkyPathfindingFrame.java</file>
             <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/AbstractPathfinder.java</file>
+            <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/PathfinderRunningThread.java</file>
+            <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/FibonacciHeap.java</file>
             <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/AStarPathfinder.java</file>
             <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/FunkyPathfindingPanel.java</file>
             <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/Utils.java</file>
             <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/FunkyPathfindingOptionsFrame.java</file>
             <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/Configuration.java</file>
+            <file>file:/Users/rodionefremov/NetBeansProjects/FunkyPathfinding/src/net/coderodde/funky/pathfinding/DijkstraPathfinder.java</file>
         </group>
     </open-files>
 </project-private>

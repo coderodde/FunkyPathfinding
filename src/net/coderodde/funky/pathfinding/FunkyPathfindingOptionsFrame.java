@@ -1,7 +1,9 @@
 package net.coderodde.funky.pathfinding;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Label;
+import java.awt.Toolkit;
 import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,6 +19,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
     private static final String PHBA_NAME       = "PHBA";
     private static final String DIJKSTRA_NAME   = "Dijkstra";
     private static final String BIDIJKSTRA_NAME = "Bidirectional Dijkstra";
+    private static final int SKIP_PIXELS = 30;
     
     private final JButton buttonDrawWorld;
     private final JButton buttonDrawWalls;
@@ -33,11 +36,13 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
     
     private final JComboBox comboBoxAlgorithm;
     private final FunkyPathfindingPanel funkyPathfindingPanel;
+    private final FunkyPathfindingFrame funkyPathfindingFrame;
     
     public FunkyPathfindingOptionsFrame(
             FunkyPathfindingFrame frame,
             FunkyPathfindingPanel funkyPathfindingPanel) {
         super(frame);
+        this.funkyPathfindingFrame = frame;
         this.funkyPathfindingPanel =
                 Objects.requireNonNull(funkyPathfindingPanel, 
                                        "The input panel is null.");
@@ -61,6 +66,8 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         addButtons();
         
         pack();
+        setLocation();
+        setResizable(false);
         setVisible(true);
     }
     
@@ -99,7 +106,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             this.buttonRun.setEnabled(false);
             this.buttonReset.setEnabled(true);
             
-            
+            funkyPathfindingFrame.requestFocus();
             funkyPathfindingPanel.search(getPathfinderFromSelection());
         });
         
@@ -124,5 +131,11 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
                 throw new UnsupportedOperationException(
                         "Unknown pathfinder name.");
         }
+    }
+    
+    private void setLocation() {
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation(screen.width - getWidth() - SKIP_PIXELS,
+                    SKIP_PIXELS);
     }
 }
