@@ -29,6 +29,7 @@ public final class FunkyPathfindingPanel extends JPanel {
     private final Point sourcePoint;
     private final Point targetPoint;
     private final boolean[][] gridGraphData;
+    private final FunkyPathfindingPanelMouseAdapter mouseAdapter;
     
     private Color worldColor    = DEFAULT_WORLD_COLOR;
     private Color wallColor     = DEFAULT_WALL_COLOR;
@@ -62,11 +63,19 @@ public final class FunkyPathfindingPanel extends JPanel {
         setSource(width / 10, height / 10);
         setTarget(9 * width / 10, 9 * height / 10);
         
-        FunkyPathfindingPanelMouseAdapter mouseAdapter = 
-                new FunkyPathfindingPanelMouseAdapter(this);
-        
-        addMouseListener(mouseAdapter);
-        addMouseMotionListener(mouseAdapter);
+        this.mouseAdapter = new FunkyPathfindingPanelMouseAdapter(this);
+        setInteractive(true);
+    }
+    
+    public void setInteractive(boolean interactive) {
+        if (interactive == false) {
+            mouseAdapter.forgetCurrentPoint();
+            removeMouseListener(mouseAdapter);
+            removeMouseMotionListener(mouseAdapter);
+        } else {
+            addMouseListener(mouseAdapter);
+            addMouseMotionListener(mouseAdapter);
+        }
     }
     
     public void search(AbstractPathfinder pathfinder) {
@@ -166,6 +175,14 @@ public final class FunkyPathfindingPanel extends JPanel {
         paintPoint(x, y, targetColor);
     }
     
+    public void unsetSource(int x, int y) {
+        unsetTerminal(x, y);
+    }
+    
+    public void unsetTarget(int x, int y) {
+        unsetTerminal(x, y);
+    }
+    
     public void clearAllWalls() {
         for (int y = 0; y < gridGraphData.length; ++y) {
             for (int x = 0; x < gridGraphData[0].length; ++x) {
@@ -231,8 +248,6 @@ public final class FunkyPathfindingPanel extends JPanel {
                         wallColor);
             }
         }
-        
-        repaint();
     }
     
     public void togglePause() {
@@ -335,5 +350,38 @@ public final class FunkyPathfindingPanel extends JPanel {
         }
         
         return prunedList;
+    }
+    
+    private void unsetTerminal(int x, int y) {
+        int halfWidth = POINT_RECTANGLE_WIDTH_HEIGHT / 2;
+        int halfHeight = POINT_RECTANGLE_WIDTH_HEIGHT / 2;
+        int startX = x - halfWidth;
+        int startY = y - halfHeight;
+        
+        for (int yy = 0; yy < POINT_RECTANGLE_WIDTH_HEIGHT; ++yy) {
+            if (startY + yy < 0) {
+                continue;
+            }
+            
+            if (startY + yy >= height) {
+                continue;
+            }
+            
+            for (int xx = 0; xx < POINT_RECTANGLE_WIDTH_HEIGHT; ++xx) {
+                if (startX + xx < 0) {
+                    continue;
+                }
+                
+                if (startX + xx >= width) {
+                    continue;
+                }
+                
+                if (gridGraphData[startY + yy][startX + xx] == IS_WALL) {
+                    setPixel(startX + xx, startY + yy, wallColor);
+                } else {
+                    setPixel(startX + xx, startY + yy, worldColor);
+                }
+            }
+        }
     }
 }

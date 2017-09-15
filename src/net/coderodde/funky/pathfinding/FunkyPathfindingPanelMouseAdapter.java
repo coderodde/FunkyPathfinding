@@ -20,6 +20,10 @@ implements MouseListener, MouseMotionListener {
                                        "The input panel is null.");
     }
     
+    public void forgetCurrentPoint() {
+        currentPoint = null;
+    }
+    
     @Override
     public void mouseClicked(MouseEvent e) {}
 
@@ -52,6 +56,9 @@ implements MouseListener, MouseMotionListener {
         Point point = e.getPoint();
         
         if (currentPoint != null) {
+            funkyPathfindingPanel.unsetSource(currentPoint.x, currentPoint.y);
+            funkyPathfindingPanel.unsetTarget(currentPoint.x, currentPoint.y);
+            
             currentPoint.x = point.x;
             currentPoint.y = point.y;
             

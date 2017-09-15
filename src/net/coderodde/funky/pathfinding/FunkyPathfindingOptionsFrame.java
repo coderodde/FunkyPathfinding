@@ -106,6 +106,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             this.buttonRun.setEnabled(false);
             this.buttonReset.setEnabled(true);
             
+            funkyPathfindingPanel.setInteractive(false);
             funkyPathfindingFrame.requestFocus();
             funkyPathfindingPanel.search(getPathfinderFromSelection());
         });
@@ -116,6 +117,8 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             
             funkyPathfindingPanel.requestExit();
             funkyPathfindingPanel.reset();
+            funkyPathfindingPanel.repaint();
+            funkyPathfindingPanel.setInteractive(true);
         });
     }
     
