@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import static net.coderodde.funky.pathfinding.Configuration.NODES_EXPANSIONS_PER_REPAINT;
+import static net.coderodde.funky.pathfinding.Configuration.REPAINTS_PER_PATH_DRAWING;
 
 public class AStarTemplatePathfinder extends AbstractPathfinder {
 
@@ -38,6 +39,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
         open.add(sourcePoint, 0.0);
         parents.put(sourcePoint, null);
         distances.put(sourcePoint, 0.0);
+        int repaints = 0;
         
         while (open.size() > 0) {
             if (exit) {
@@ -73,18 +75,23 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
             closed.add(currentPoint);
             
             if (closed.size() % NODES_EXPANSIONS_PER_REPAINT == 0) {
-                for (Point p : previousPartialPath) {
-                    panel.markAsClosed(p);
+                repaints++;
+                
+                if (repaints % REPAINTS_PER_PATH_DRAWING == 0) {
+                    for (Point p : previousPartialPath) {
+                        panel.markAsClosed(p);
+                    }
+
+                    List<Point> partialPath = tracebackPath(open.top(), parents);
+
+                    for (Point p : partialPath) {
+                        panel.markAsPath(p);
+                    }
+
+                    previousPartialPath = partialPath;
+                    this.pathLength = getLength(partialPath);
                 }
-                
-                List<Point> partialPath = tracebackPath(open.top(), parents);
-                
-                for (Point p : partialPath) {
-                    panel.markAsPath(p);
-                }
-                
-                previousPartialPath = partialPath;
-                this.pathLength = getLength(partialPath);
+                    
                 this.frontierNodeCount = open.size();
                 panel.repaint();
             }

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import static net.coderodde.funky.pathfinding.Configuration.NODES_EXPANSIONS_PER_REPAINT;
+import static net.coderodde.funky.pathfinding.Configuration.REPAINTS_PER_PATH_DRAWING;
 
 public final class BidirectionalDijkstraPathfinder 
 extends AbstractPathfinder {
@@ -47,6 +48,8 @@ extends AbstractPathfinder {
         
         distancesForward.put(sourcePoint, 0.0);
         distancesBackward.put(targetPoint, 0.0);
+        
+        int repaints = 0;
         
         while (openForward.size() > 0 && openBackward.size() > 0) {
             if (exit) {
@@ -87,37 +90,42 @@ extends AbstractPathfinder {
             
             if ((closedForward.size() + closedBackward.size())
                     % NODES_EXPANSIONS_PER_REPAINT == 0) {
-                for (Point p : previousPartialForwardPath) {
-                    panel.markAsClosed(p);
-                }
+                repaints++;
                 
-                for (Point p : previousPartialBackwardPath) {
-                    panel.markAsClosed(p);
-                }
-                
-                List<Point> partialForwardPath = 
-                        tracebackPath(openForward.top(),
-                                      parentsForward);
-                
-                List<Point> partialBackwardPath = 
-                        tracebackPath(openBackward.top(),
-                                      parentsBackward);
-                
-                // Not necessarily required, but what the hell.
-                Collections.reverse(partialBackwardPath);
-                
-                for (Point p : partialForwardPath) {
-                    panel.markAsPath(p);
+                if (repaints % REPAINTS_PER_PATH_DRAWING == 0) {
+                    for (Point p : previousPartialForwardPath) {
+                        panel.markAsClosed(p);
+                    }
+
+                    for (Point p : previousPartialBackwardPath) {
+                        panel.markAsClosed(p);
+                    }
+
+                    List<Point> partialForwardPath = 
+                            tracebackPath(openForward.top(),
+                                          parentsForward);
+
+                    List<Point> partialBackwardPath = 
+                            tracebackPath(openBackward.top(),
+                                          parentsBackward);
+
+                    // Not necessarily required, but what the hell.
+                    Collections.reverse(partialBackwardPath);
+
+                    for (Point p : partialForwardPath) {
+                        panel.markAsPath(p);
+                    }
+
+                    for (Point p : partialBackwardPath) {
+                        panel.markAsPath(p);
+                    }
+
+                    previousPartialForwardPath = partialForwardPath;
+                    previousPartialBackwardPath = partialBackwardPath;
+                    this.pathLength = getLength(partialForwardPath) +
+                                      getLength(partialBackwardPath);
                 }
                     
-                for (Point p : partialBackwardPath) {
-                    panel.markAsPath(p);
-                }
-                
-                previousPartialForwardPath = partialForwardPath;
-                previousPartialBackwardPath = partialBackwardPath;
-                this.pathLength = getLength(partialForwardPath) +
-                                  getLength(partialBackwardPath);
                 this.frontierNodeCount = openForward.size() + 
                                          openBackward.size();
                 panel.repaint();
