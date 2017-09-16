@@ -285,7 +285,7 @@ public final class FunkyPathfindingPanel extends JPanel {
         int totalNodes    = closedNodes + frontierNodes;
         
         g.setColor(worldColor);
-        g.fillRect(getWidth() - STAT_WIDTH, 0, STAT_WIDTH, 45);
+        g.fillRect(getWidth() - STAT_WIDTH, 0, STAT_WIDTH, 60);
         g.setColor(Color.BLACK);
         g.setFont(statisticsFont);
         
@@ -298,6 +298,12 @@ public final class FunkyPathfindingPanel extends JPanel {
         g.drawString("Total nodes:    " + totalNodes,
                      getWidth() - STAT_WIDTH,
                      45);
+        
+        if (pathfinder.pathLength != Double.NaN) {
+            g.drawString("Path length:    " + (int) pathfinder.pathLength,
+                         getWidth() - STAT_WIDTH,
+                         60);
+        }
     }
     
     @Override

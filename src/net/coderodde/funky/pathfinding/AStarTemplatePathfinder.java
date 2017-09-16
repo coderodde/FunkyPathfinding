@@ -27,6 +27,8 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
         Objects.requireNonNull(sourcePoint, "The source point is null.");
         Objects.requireNonNull(targetPoint, "The target point is null.");
         
+        this.pathLength = Double.NaN;
+        
         FibonacciHeap<Point, Double> open = new FibonacciHeap<>();
         Set<Point> closed = new HashSet<>();
         Map<Point, Point> parents = new HashMap<>();
@@ -63,6 +65,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
                 }
                 
                 this.frontierNodeCount = open.size();
+                this.pathLength = getLength(shortestPath);
                 panel.repaint();
                 return;
             }
@@ -81,6 +84,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
                 }
                 
                 previousPartialPath = partialPath;
+                this.pathLength = getLength(partialPath);
                 this.frontierNodeCount = open.size();
                 panel.repaint();
             }
@@ -112,8 +116,5 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
                 }
             }
         }
-        
-        throw new TargetNotReachableException(
-                "Target " + targetPoint + " not reachable from " + sourcePoint + ".");
     }
 }

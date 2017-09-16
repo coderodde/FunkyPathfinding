@@ -136,6 +136,9 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             case DIJKSTRA_NAME:
                 return new DijkstraPathfinder();
                 
+            case PHBA_NAME:
+                return new PHBAPathfinder();
+                
             default:
                 throw new UnsupportedOperationException(
                         "Unknown pathfinder name.");
