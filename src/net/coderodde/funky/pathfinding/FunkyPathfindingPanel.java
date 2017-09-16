@@ -195,6 +195,7 @@ public final class FunkyPathfindingPanel extends JPanel {
     
     public void draw(int x, int y) {
         switch (drawingMode) {
+            
             case SET_WALL:
                 drawWall(x, y);
                 break;
@@ -350,6 +351,25 @@ public final class FunkyPathfindingPanel extends JPanel {
         }
         
         return prunedList;
+    }
+    
+    void draw(int x, int y, int previousX, int previousY) {
+        double dx = previousX - x;
+        double dy = previousY - y;
+        double length = Math.sqrt(dx * dx + dy * dy);
+        double angle = Math.atan2(dy, dx);
+        
+        if (drawingMode == DrawingMode.SET_WALL) {
+            for (int i = 1; i < (int) Math.ceil(length); ++i) {
+                drawWall(x + (int)(i * Math.cos(angle)),
+                         y + (int)(i * Math.sin(angle)));
+            }
+        } else {
+            for (int i = 1; i < (int) Math.ceil(length); ++i) {
+                drawWorld(x + (int)(i * Math.cos(angle)),
+                          y + (int)(i * Math.sin(angle)));
+            }
+        }
     }
     
     private void unsetTerminal(int x, int y) {

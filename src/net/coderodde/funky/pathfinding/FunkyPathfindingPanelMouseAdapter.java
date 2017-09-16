@@ -12,6 +12,8 @@ implements MouseListener, MouseMotionListener {
 
     private final FunkyPathfindingPanel funkyPathfindingPanel;
     private Point currentPoint;
+    private int previousX;
+    private int previousY;
     
     public FunkyPathfindingPanelMouseAdapter(
             FunkyPathfindingPanel funkyPathfindingPanel) {
@@ -38,6 +40,10 @@ implements MouseListener, MouseMotionListener {
                 .distance(e.getPoint()) < MAXIMUM_DISTANCE_FROM_POINT) {
             currentPoint = funkyPathfindingPanel.getTargetPoint();
         }
+        
+        Point p = e.getPoint();
+        previousX = p.x;
+        previousY = p.y;
     }
 
     @Override
@@ -70,8 +76,11 @@ implements MouseListener, MouseMotionListener {
             
             funkyPathfindingPanel.repaint();
         } else {
-            funkyPathfindingPanel.draw(point.x, point.y);
+            
+            funkyPathfindingPanel.draw(point.x, point.y, previousX, previousY);
             funkyPathfindingPanel.repaint();
+            previousX = point.x;
+            previousY = point.y;
         }
     }
 
