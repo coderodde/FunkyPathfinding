@@ -51,7 +51,17 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
             panel.markAsClosed(currentPoint);
             
             if (currentPoint.equals(targetPoint)) {
-//                return tracebackPath(targetPoint, parents);
+                for (Point p : previousPartialPath) {
+                    panel.markAsClosed(p);
+                }
+                
+                List<Point> shortestPath = tracebackPath(currentPoint, parents);
+                
+                for (Point p : shortestPath) {
+                    panel.markAsPath(p);
+                }
+                
+                panel.repaint();
                 return;
             }
             
