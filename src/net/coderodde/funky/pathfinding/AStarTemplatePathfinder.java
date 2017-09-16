@@ -38,13 +38,13 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
         distances.put(sourcePoint, 0.0);
         
         while (open.size() > 0) {
+            if (exit) {
+                return;
+            }
+            
             if (pause) {
                 sleep();
                 continue;
-            }
-            
-            if (exit) {
-                return;
             }
             
             Point currentPoint = open.extractMinimum();

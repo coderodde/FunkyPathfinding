@@ -86,10 +86,7 @@ public final class FunkyPathfindingPanel extends JPanel {
         
         try {
             this.currentThread.start();
-        } catch (TargetNotReachableException ex) {
-            
-        }
-            
+        } catch (TargetNotReachableException ex) {}   
     }
     
     public List<Point> expand(Point point) {
@@ -186,6 +183,7 @@ public final class FunkyPathfindingPanel extends JPanel {
     public void clearAllWalls() {
         for (int y = 0; y < gridGraphData.length; ++y) {
             for (int x = 0; x < gridGraphData[0].length; ++x) {
+                setPixel(x, y, worldColor);
                 gridGraphData[y][x] = IS_TRAVERSABLE;
             }
         }

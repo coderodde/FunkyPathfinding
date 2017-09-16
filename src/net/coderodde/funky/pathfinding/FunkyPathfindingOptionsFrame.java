@@ -87,14 +87,14 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         this.buttonDrawWalls.addActionListener((e) -> {
             this.buttonDrawWalls.setEnabled(false);
             this.buttonDrawWorld.setEnabled(true);
-            this.buttonDrawWorld.setFocusable(true);
+            this.buttonClear.setEnabled(true);
             funkyPathfindingPanel.setDrawingMode(DrawingMode.SET_WALL);
         });
         
         this.buttonDrawWorld.addActionListener((e) -> {
             this.buttonDrawWorld.setEnabled(false);
             this.buttonDrawWalls.setEnabled(true);
-            this.buttonDrawWalls.setFocusable(true);
+            this.buttonClear.setEnabled(true);
             funkyPathfindingPanel.setDrawingMode(DrawingMode.REMOVE_WALL);
         });
         
@@ -105,6 +105,9 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         this.buttonRun.addActionListener((e) -> {
             this.buttonRun.setEnabled(false);
             this.buttonReset.setEnabled(true);
+            this.buttonDrawWorld.setEnabled(false);
+            this.buttonDrawWalls.setEnabled(false);
+            this.buttonClear.setEnabled(false);
             
             funkyPathfindingPanel.setInteractive(false);
             funkyPathfindingFrame.requestFocus();
@@ -114,6 +117,9 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         this.buttonReset.addActionListener((e) -> {
             this.buttonRun.setEnabled(true);
             this.buttonReset.setEnabled(false);
+            this.buttonDrawWorld.setEnabled(true);
+            this.buttonDrawWalls.setEnabled(true);
+            this.buttonClear.setEnabled(true);
             
             funkyPathfindingPanel.requestExit();
             funkyPathfindingPanel.reset();
