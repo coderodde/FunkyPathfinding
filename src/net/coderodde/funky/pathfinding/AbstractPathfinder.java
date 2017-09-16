@@ -2,6 +2,7 @@ package net.coderodde.funky.pathfinding;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import static net.coderodde.funky.pathfinding.Configuration.THREAD_SLEEP_MILLISECONDS;
@@ -47,6 +48,7 @@ public abstract class AbstractPathfinder {
             currentPoint = parents.get(currentPoint);
         }
         
+        Collections.<Point>reverse(path);
         return path;
     }
     

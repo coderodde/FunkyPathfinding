@@ -142,6 +142,9 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             case NBASTAR_NAME:
                 return new NewBidirectionalAStarPathfinder();
                 
+            case BIDIJKSTRA_NAME:
+                return new BidirectionalDijkstraPathfinder();
+                
             default:
                 throw new UnsupportedOperationException(
                         "Unknown pathfinder name.");
