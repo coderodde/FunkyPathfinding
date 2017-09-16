@@ -1,6 +1,7 @@
 package net.coderodde.funky.pathfinding;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -22,6 +23,7 @@ public final class FunkyPathfindingPanel extends JPanel {
 
     private static final boolean IS_WALL = true;
     private static final boolean IS_TRAVERSABLE = !IS_WALL;
+    private static final int STAT_WIDTH = 200;
     
     private final int width;
     private final int height;
@@ -30,6 +32,7 @@ public final class FunkyPathfindingPanel extends JPanel {
     private final Point targetPoint;
     private final boolean[][] gridGraphData;
     private final FunkyPathfindingPanelMouseAdapter mouseAdapter;
+    private final Font statisticsFont = new Font("Monospaced", Font.BOLD, 14);
     
     private Color worldColor    = DEFAULT_WORLD_COLOR;
     private Color wallColor     = DEFAULT_WALL_COLOR;
@@ -39,7 +42,6 @@ public final class FunkyPathfindingPanel extends JPanel {
     private Color frontierColor = DEFAULT_FRONTIER_COLOR;
     private Color pathColor     = DEFAULT_PATH_COLOR;
     private DrawingMode drawingMode = DrawingMode.SET_WALL;
-    
     private PathfinderRunningThread currentThread;
     
     public FunkyPathfindingPanel(int width, 
@@ -265,14 +267,44 @@ public final class FunkyPathfindingPanel extends JPanel {
                 
             }
             
+            Graphics g = bufferedImage.getGraphics();
+            writeStatistics(g);
+            repaint();
             currentThread = null;
         }
+    }
+    
+    private void writeStatistics(Graphics g) {
+        if (currentThread == null) {
+            return;
+        }
+        
+        AbstractPathfinder pathfinder = currentThread.getPathfinder();
+        int closedNodes   = pathfinder.getNumberOfClosedNodes();
+        int frontierNodes = pathfinder.getNumberOfFrontierNodes();
+        int totalNodes    = closedNodes + frontierNodes;
+        
+        g.setColor(worldColor);
+        g.fillRect(getWidth() - STAT_WIDTH, 0, STAT_WIDTH, 45);
+        g.setColor(Color.BLACK);
+        g.setFont(statisticsFont);
+        
+        g.drawString("Closed nodes:   " + closedNodes, 
+                     getWidth() - STAT_WIDTH,
+                     15);
+        g.drawString("Frontier nodes: " + frontierNodes,
+                     getWidth() - STAT_WIDTH,
+                     30);
+        g.drawString("Total nodes:    " + totalNodes,
+                     getWidth() - STAT_WIDTH,
+                     45);
     }
     
     @Override
     public void paintComponent(Graphics g) {
         setSource(sourcePoint.x, sourcePoint.y);
         setTarget(targetPoint.x, targetPoint.y);
+        writeStatistics(bufferedImage.getGraphics());
         g.drawImage(bufferedImage, 0, 0, null);
     }
     

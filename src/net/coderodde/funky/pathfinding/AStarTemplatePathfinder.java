@@ -49,6 +49,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
             
             Point currentPoint = open.extractMinimum();
             panel.markAsClosed(currentPoint);
+            this.closedNodeCount++;
             
             if (currentPoint.equals(targetPoint)) {
                 for (Point p : previousPartialPath) {
@@ -61,6 +62,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
                     panel.markAsPath(p);
                 }
                 
+                this.frontierNodeCount = open.size();
                 panel.repaint();
                 return;
             }
@@ -79,6 +81,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
                 }
                 
                 previousPartialPath = partialPath;
+                this.frontierNodeCount = open.size();
                 panel.repaint();
             }
             

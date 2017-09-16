@@ -8,7 +8,8 @@ import static net.coderodde.funky.pathfinding.Configuration.THREAD_SLEEP_MILLISE
 
 public abstract class AbstractPathfinder {
 
-    protected int expandedNodeCount = 0;
+    protected int frontierNodeCount = 0;
+    protected int closedNodeCount = 0;
     protected FunkyPathfindingPanel panel;
     protected volatile boolean exit = false;
     protected volatile boolean pause = false;
@@ -27,8 +28,12 @@ public abstract class AbstractPathfinder {
         exit = true;
     }
     
-    public int getNumberOfExpandedNodes() {
-        return expandedNodeCount;
+    public int getNumberOfFrontierNodes() {
+        return frontierNodeCount;
+    }
+    
+    public int getNumberOfClosedNodes() {
+        return closedNodeCount;
     }
     
     protected List<Point> tracebackPath(Point targetPoint,

@@ -21,6 +21,10 @@ public final class PathfinderRunningThread extends Thread {
         pathfinder.search(sourcePoint, targetPoint);
     }
     
+    public AbstractPathfinder getPathfinder() {
+        return pathfinder;
+    }
+    
     public void togglePause() {
         pathfinder.togglePause();
     }
