@@ -2,7 +2,6 @@ package net.coderodde.funky.pathfinding;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,23 +10,18 @@ import java.util.Objects;
 import java.util.Set;
 import static net.coderodde.funky.pathfinding.Configuration.NODES_EXPANSIONS_PER_REPAINT;
 
-public class PHBAPathfinder extends AbstractPathfinder {
+public final class NewBidirectionalAStarPathfinder 
+extends AbstractPathfinder {
 
     @Override
     public void search(Point sourcePoint, Point targetPoint) {
         Objects.requireNonNull(sourcePoint, "The source point is null.");
         Objects.requireNonNull(targetPoint, "The target point is null.");
         
-        List<Point> previousPartialForwardPath  = new ArrayList<>();
-        List<Point> previousPartialBackwardPath = new ArrayList<>();
-        
-        this.pathLength = Double.NaN;
-        
         FibonacciHeap<Point, Double> openForward  = new FibonacciHeap<>();
         FibonacciHeap<Point, Double> openBackward = new FibonacciHeap<>();
         
-        Set<Point> closedForward  = new HashSet<>();
-        Set<Point> closedBackward = new HashSet<>();
+        Set<Point> closed = new HashSet<>();
         
         Map<Point, Point> parentsForward  = new HashMap<>();
         Map<Point, Point> parentsBackward = new HashMap<>();
@@ -36,16 +30,20 @@ public class PHBAPathfinder extends AbstractPathfinder {
         Map<Point, Double> distancesBackward = new HashMap<>();
         
         double bestPathLength = Double.POSITIVE_INFINITY;
+        double fForward  = sourcePoint.distance(targetPoint);
+        double fBackward = targetPoint.distance(sourcePoint);
         Point meetingPoint = null;
         
-        openForward.add(sourcePoint, 0.0);
-        openBackward.add(targetPoint, 0.0);
-        
+        openForward.add(sourcePoint, fForward);
+        openBackward.add(targetPoint, fBackward);
         parentsForward.put(sourcePoint, null);
         parentsBackward.put(targetPoint, null);
-        
         distancesForward.put(sourcePoint, 0.0);
         distancesBackward.put(targetPoint, 0.0);
+        
+        List<Point> previousPartialForwardPath  = new ArrayList<>(0);
+        List<Point> previousPartialBackwardPath = new ArrayList<>();
+        this.pathLength = Double.NaN;
         
         while (openForward.size() > 0 && openBackward.size() > 0) {
             if (exit) {
@@ -57,46 +55,7 @@ public class PHBAPathfinder extends AbstractPathfinder {
                 continue;
             }
             
-            if (meetingPoint != null) {
-                Point minForward  = openForward.top();
-                Point minBackward = openBackward.top();
-                
-                double distanceForward = distancesForward.get(minForward) +
-                                         minForward.distance(targetPoint);
-                
-                double distanceBackward = distancesBackward.get(minBackward) +
-                                          minBackward.distance(sourcePoint);
-                
-                this.pathLength = distanceForward + distanceBackward;
-                
-                if (bestPathLength <= Math.max(distanceForward, 
-                                               distanceBackward)) {
-                    for (Point p : previousPartialForwardPath) {
-                        panel.markAsClosed(p);
-                    }
-                    
-                    for (Point p : previousPartialBackwardPath) {
-                        panel.markAsClosed(p);
-                    }
-                    
-                    List<Point> shortestPath = tracebackPath(meetingPoint, 
-                                                             parentsForward, 
-                                                             parentsBackward);
-                    
-                    for (Point p : shortestPath) {
-                        panel.markAsPath(p);
-                    }
-                    
-                    this.frontierNodeCount = openForward.size() + 
-                                             openBackward.size();
-                    this.pathLength = getLength(shortestPath);
-                    panel.repaint();
-                    return;
-                }
-            }
-            
-            if ((closedForward.size() + closedBackward.size())
-                    % NODES_EXPANSIONS_PER_REPAINT == 0) {
+            if (closed.size() % NODES_EXPANSIONS_PER_REPAINT == 0) {
                 for (Point p : previousPartialForwardPath) {
                     panel.markAsClosed(p);
                 }
@@ -106,45 +65,48 @@ public class PHBAPathfinder extends AbstractPathfinder {
                 }
                 
                 List<Point> partialForwardPath = 
-                        tracebackPath(openForward.top(),
-                                      parentsForward);
+                        tracebackPath(openForward.top(), parentsForward);
                 
                 List<Point> partialBackwardPath = 
-                        tracebackPath(openBackward.top(),
-                                      parentsBackward);
-                
-                // Not necessarily required, but what the hell.
-                Collections.reverse(partialBackwardPath);
+                        tracebackPath(openBackward.top(), parentsBackward);
                 
                 for (Point p : partialForwardPath) {
                     panel.markAsPath(p);
                 }
-                    
+                
                 for (Point p : partialBackwardPath) {
                     panel.markAsPath(p);
                 }
                 
                 previousPartialForwardPath = partialForwardPath;
                 previousPartialBackwardPath = partialBackwardPath;
-                this.pathLength = getLength(partialForwardPath) +
+                
+                this.pathLength = getLength(partialForwardPath) + 
                                   getLength(partialBackwardPath);
                 this.frontierNodeCount = openForward.size() + 
                                          openBackward.size();
                 panel.repaint();
             }
             
-            int totalForwardNodes  = openForward.size() + closedForward.size();
-            int totalBackwardNodes = openBackward.size() + 
-                                     closedBackward.size();
-            
-            if (totalForwardNodes < totalBackwardNodes) {
+            if (openForward.size() < openBackward.size()) {
                 Point currentPoint = openForward.extractMinimum();
+                closed.add(currentPoint);
                 panel.markAsClosed(currentPoint);
                 this.closedNodeCount++;
-                closedForward.add(currentPoint);
+                
+                double distance1 = distancesForward.get(currentPoint) +
+                                   currentPoint.distance(targetPoint);
+                
+                double distance2 = distancesForward.get(currentPoint) +
+                                   fBackward -
+                                   currentPoint.distance(sourcePoint);
+                
+                if (Math.max(distance1, distance2) >= bestPathLength) {
+                    continue;
+                }
                 
                 for (Point childPoint : panel.expand(currentPoint)) {
-                    if (closedForward.contains(childPoint)) {
+                    if (closed.contains(childPoint)) {
                         continue;
                     }
                     
@@ -157,19 +119,19 @@ public class PHBAPathfinder extends AbstractPathfinder {
                         parentsForward.put(childPoint, currentPoint);
                         
                         openForward.add(childPoint,
-                                        tentativeDistance + 
-                                            childPoint.distance(targetPoint));
+                                        tentativeDistance +
+                                        childPoint.distance(targetPoint));
+                        
                         panel.markAsFrontier(childPoint);
                         
-                        if (closedBackward.contains(childPoint)) {
+                        if (distancesBackward.containsKey(childPoint)) {
                             double pathLength = 
-                                    distancesBackward.get(childPoint) +
-                                    tentativeDistance;
+                                    tentativeDistance +
+                                    distancesBackward.get(childPoint);
                             
                             if (bestPathLength > pathLength) {
                                 bestPathLength = pathLength;
                                 meetingPoint = childPoint;
-                                this.pathLength = pathLength;
                             }
                         }
                     } else if (distancesForward.get(childPoint) 
@@ -182,27 +144,43 @@ public class PHBAPathfinder extends AbstractPathfinder {
                                 tentativeDistance +
                                         childPoint.distance(targetPoint));
                         
-                        if (closedBackward.contains(childPoint)) {
+                        if (distancesBackward.containsKey(childPoint)) {
                             double pathLength = 
-                                    distancesBackward.get(childPoint) +
-                                    tentativeDistance;
+                                    tentativeDistance +
+                                    distancesBackward.get(childPoint);
                             
                             if (bestPathLength > pathLength) {
                                 bestPathLength = pathLength;
                                 meetingPoint = childPoint;
-                                this.pathLength = pathLength;
                             }
                         }
                     }
                 }
+                
+                if (openForward.size() > 0) {
+                    Point point = openForward.top();
+                    fForward = distancesForward.get(point) + 
+                            point.distance(targetPoint);
+                }
             } else {
                 Point currentPoint = openBackward.extractMinimum();
+                closed.add(currentPoint);
                 panel.markAsClosed(currentPoint);
                 this.closedNodeCount++;
-                closedBackward.add(currentPoint);
+                
+                double distance1 = distancesBackward.get(currentPoint) +
+                                   currentPoint.distance(sourcePoint);
+                
+                double distance2 = distancesBackward.get(currentPoint) +
+                                   fForward -
+                                   currentPoint.distance(targetPoint);
+                
+                if (Math.max(distance1, distance2) >= bestPathLength) {
+                    continue;
+                }
                 
                 for (Point parentPoint : panel.expand(currentPoint)) {
-                    if (closedBackward.contains(parentPoint)) {
+                    if (closed.contains(parentPoint)) {
                         continue;
                     }
                     
@@ -220,15 +198,14 @@ public class PHBAPathfinder extends AbstractPathfinder {
                         
                         panel.markAsFrontier(parentPoint);
                         
-                        if (closedForward.contains(parentPoint)) {
+                        if (distancesForward.containsKey(parentPoint)) {
                             double pathLength = 
-                                    distancesForward.get(parentPoint) +
-                                    tentativeDistance;
+                                    tentativeDistance + 
+                                    distancesForward.get(parentPoint);
                             
-                            if (bestPathLength > tentativeDistance) {
-                                bestPathLength = tentativeDistance;
+                            if (bestPathLength > pathLength) {
+                                bestPathLength = pathLength;
                                 meetingPoint = parentPoint;
-                                this.pathLength = pathLength;
                             }
                         }
                     } else if (distancesBackward.get(parentPoint) 
@@ -238,23 +215,51 @@ public class PHBAPathfinder extends AbstractPathfinder {
                         
                         openBackward.decreasePriority(
                                 parentPoint,
-                                tentativeDistance + 
+                                tentativeDistance +
                                         parentPoint.distance(sourcePoint));
                         
-                        if (closedForward.contains(parentPoint)) {
+                        if (distancesForward.containsKey(parentPoint)) {
                             double pathLength = 
-                                    distancesForward.get(parentPoint) +
-                                    tentativeDistance;
+                                    tentativeDistance + 
+                                    distancesForward.get(parentPoint);
                             
-                            if (bestPathLength > tentativeDistance) {
-                                bestPathLength = tentativeDistance;
+                            if (bestPathLength > pathLength) {
+                                bestPathLength = pathLength;
                                 meetingPoint = parentPoint;
-                                this.pathLength = pathLength;
                             }
                         }
                     }
                 }
+                
+                if (openBackward.size() > 0) {
+                    Point point = openBackward.top();
+                    fBackward = distancesBackward.get(point) + 
+                                point.distance(sourcePoint);
+                }
             }
+        }
+        
+        if (meetingPoint != null) {
+            for (Point p : previousPartialForwardPath) {
+                panel.markAsClosed(p);
+            }
+            
+            for (Point p : previousPartialBackwardPath) {
+                panel.markAsClosed(p);
+            }
+            
+            List<Point> shortestPath = tracebackPath(meetingPoint,
+                                                     parentsForward,
+                                                     parentsBackward);
+            
+            for (Point p : shortestPath) {
+                panel.markAsPath(p);
+            }
+            
+            this.frontierNodeCount = openForward.size() + 
+                                     openBackward.size();
+            this.pathLength = getLength(shortestPath);
+            panel.repaint();
         }
     }
 }
