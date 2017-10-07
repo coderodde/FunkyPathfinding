@@ -30,7 +30,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
         
         this.pathLength = Double.NaN;
         
-        FibonacciHeap<Point, Double> open = new FibonacciHeap<>();
+        IndexedBinaryHeap<Point, Double> open = new IndexedBinaryHeap<>();
         Set<Point> closed = new HashSet<>();
         Map<Point, Point> parents = new HashMap<>();
         Map<Point, Double> distances = new HashMap<>();

@@ -25,8 +25,8 @@ extends AbstractPathfinder {
         
         this.pathLength = Double.NaN;
         
-        FibonacciHeap<Point, Double> openForward  = new FibonacciHeap<>();
-        FibonacciHeap<Point, Double> openBackward = new FibonacciHeap<>();
+        IndexedBinaryHeap<Point, Double> openForward = new IndexedBinaryHeap<>();
+        IndexedBinaryHeap<Point, Double> openBackward = new IndexedBinaryHeap<>();
         
         Set<Point> closedForward  = new HashSet<>();
         Set<Point> closedBackward = new HashSet<>();

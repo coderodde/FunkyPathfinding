@@ -19,8 +19,8 @@ extends AbstractPathfinder {
         Objects.requireNonNull(sourcePoint, "The source point is null.");
         Objects.requireNonNull(targetPoint, "The target point is null.");
         
-        FibonacciHeap<Point, Double> openForward  = new FibonacciHeap<>();
-        FibonacciHeap<Point, Double> openBackward = new FibonacciHeap<>();
+        IndexedBinaryHeap<Point, Double> openForward = new IndexedBinaryHeap<>();
+        IndexedBinaryHeap<Point, Double> openBackward = new IndexedBinaryHeap<>();
         
         Set<Point> closed = new HashSet<>();
         

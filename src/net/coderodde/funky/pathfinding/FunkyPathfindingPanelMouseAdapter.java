@@ -76,7 +76,6 @@ implements MouseListener, MouseMotionListener {
             
             funkyPathfindingPanel.repaint();
         } else {
-            
             funkyPathfindingPanel.draw(point.x, point.y, previousX, previousY);
             funkyPathfindingPanel.repaint();
             previousX = point.x;
