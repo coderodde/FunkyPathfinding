@@ -11,7 +11,7 @@ import java.util.Set;
 import static net.coderodde.funky.pathfinding.Configuration.NODES_EXPANSIONS_PER_REPAINT;
 import static net.coderodde.funky.pathfinding.Configuration.REPAINTS_PER_PATH_DRAWING;
 
-public class AStarTemplatePathfinder extends AbstractPathfinder {
+public class AStarTemplatePathfinder extends AbstractPathFinder {
 
     public interface Heuristic {
         double estimate(Point p1, Point p2);
@@ -24,7 +24,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
     }
     
     @Override
-    public void search(Point sourcePoint, Point targetPoint) {
+    public List<Point> search(Point sourcePoint, Point targetPoint) {
         Objects.requireNonNull(sourcePoint, "The source point is null.");
         Objects.requireNonNull(targetPoint, "The target point is null.");
         
@@ -43,7 +43,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
         
         while (open.size() > 0) {
             if (exit) {
-                return;
+                return null;
             }
             
             if (pause) {
@@ -69,7 +69,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
                 this.frontierNodeCount = open.size();
                 this.pathLength = getLength(shortestPath);
                 panel.repaint();
-                return;
+                return shortestPath;
             }
             
             closed.add(currentPoint);
@@ -123,5 +123,7 @@ public class AStarTemplatePathfinder extends AbstractPathfinder {
                 }
             }
         }
+        
+        return null;
     }
 }

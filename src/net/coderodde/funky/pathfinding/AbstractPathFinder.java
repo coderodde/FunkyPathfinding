@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import static net.coderodde.funky.pathfinding.Configuration.THREAD_SLEEP_MILLISECONDS;
 
-public abstract class AbstractPathfinder {
+public abstract class AbstractPathFinder {
 
     protected int frontierNodeCount = 0;
     protected int closedNodeCount = 0;
@@ -20,7 +20,7 @@ public abstract class AbstractPathfinder {
         this.panel = panel;
     }
     
-    public abstract void search(Point source, Point target);
+    public abstract List<Point> search(Point source, Point target);
     
     public void togglePause() {
         pause = !pause;

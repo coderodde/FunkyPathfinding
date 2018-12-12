@@ -19,6 +19,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
     private static final String PHBA_NAME       = "PHBA";
     private static final String DIJKSTRA_NAME   = "Dijkstra";
     private static final String BIDIJKSTRA_NAME = "Bidirectional Dijkstra";
+    private static final String BIDDFS_NAME     = "BIDDFS";
     private static final int SKIP_PIXELS = 30;
     
     private final JButton buttonDrawWorld;
@@ -26,12 +27,14 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
     private final JButton buttonClear;
     private final JButton buttonRun;
     private final JButton buttonReset;
+    private final JButton buttonExit;
     private final String[] comboBoxOptions = {
                             ASTAR_NAME,
                             NBASTAR_NAME,
                             PHBA_NAME,
                             DIJKSTRA_NAME,
-                            BIDIJKSTRA_NAME 
+                            BIDIJKSTRA_NAME ,
+                            BIDDFS_NAME,
     };
     
     private final JComboBox comboBoxAlgorithm;
@@ -53,6 +56,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         this.buttonClear       = new JButton("Clear all walls");
         this.buttonRun         = new JButton("Start");
         this.buttonReset       = new JButton("Reset");
+        this.buttonExit        = new JButton("Exit");
         
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
@@ -61,7 +65,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         
         setButtonActionListeners();
         
-        GridLayout layout = new GridLayout(8, 1);   
+        GridLayout layout = new GridLayout(9, 1);   
         setLayout(layout);
         addButtons();
         
@@ -78,6 +82,7 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
         getContentPane().add(new Label());
         getContentPane().add(buttonRun);
         getContentPane().add(buttonReset);
+        getContentPane().add(buttonExit);
         getContentPane().add(new JLabel("Choose algorithm:", 
                                         SwingConstants.CENTER));
         getContentPane().add(comboBoxAlgorithm);
@@ -126,9 +131,13 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             funkyPathfindingPanel.repaint();
             funkyPathfindingPanel.setInteractive(true);
         });
+        
+        this.buttonExit.addActionListener((e) -> {
+            System.exit(0);
+        });
     }
     
-    private AbstractPathfinder getPathfinderFromSelection() {
+    private AbstractPathFinder getPathfinderFromSelection() {
         switch ((String) comboBoxAlgorithm.getSelectedItem()) {
             case ASTAR_NAME:
                 return new AStarPathfinder();
@@ -145,6 +154,9 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
             case BIDIJKSTRA_NAME:
                 return new BidirectionalDijkstraPathfinder();
                 
+            case BIDDFS_NAME:
+                return new BIDDFSPathFinder();
+                
             default:
                 throw new UnsupportedOperationException(
                         "Unknown pathfinder name.");
@@ -153,7 +165,6 @@ public final class FunkyPathfindingOptionsFrame extends JDialog {
     
     private void setLocation() {
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation(screen.width - getWidth() - SKIP_PIXELS,
-                    SKIP_PIXELS);
+        setLocation(screen.width - getWidth() - SKIP_PIXELS, SKIP_PIXELS);
     }
 }

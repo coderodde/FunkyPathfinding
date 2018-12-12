@@ -43,6 +43,7 @@ public final class FunkyPathfindingPanel extends JPanel {
     private Color pathColor     = DEFAULT_PATH_COLOR;
     private DrawingMode drawingMode = DrawingMode.SET_WALL;
     private PathfinderRunningThread currentThread;
+    private volatile long searchStartTime;
     
     public FunkyPathfindingPanel(int width, 
                                  int height) {
@@ -80,7 +81,7 @@ public final class FunkyPathfindingPanel extends JPanel {
         }
     }
     
-    public void search(AbstractPathfinder pathfinder) {
+    public void search(AbstractPathFinder pathfinder) {
         this.currentThread = new PathfinderRunningThread(pathfinder, 
                                                          sourcePoint, 
                                                          targetPoint);
@@ -88,6 +89,7 @@ public final class FunkyPathfindingPanel extends JPanel {
         
         try {
             this.currentThread.start();
+            searchStartTime = System.currentTimeMillis();
         } catch (TargetNotReachableException ex) {}   
     }
     
@@ -268,24 +270,25 @@ public final class FunkyPathfindingPanel extends JPanel {
             }
             
             Graphics g = bufferedImage.getGraphics();
-            writeStatistics(g);
+            drawStatistics(g);
             repaint();
             currentThread = null;
         }
     }
     
-    private void writeStatistics(Graphics g) {
+    private void drawStatistics(Graphics g) {
         if (currentThread == null) {
             return;
         }
         
-        AbstractPathfinder pathfinder = currentThread.getPathfinder();
+        AbstractPathFinder pathfinder = currentThread.getPathfinder();
         int closedNodes   = pathfinder.getNumberOfClosedNodes();
         int frontierNodes = pathfinder.getNumberOfFrontierNodes();
         int totalNodes    = closedNodes + frontierNodes;
+        long currentMillis = System.currentTimeMillis();
         
         g.setColor(worldColor);
-        g.fillRect(getWidth() - STAT_WIDTH, 0, STAT_WIDTH, 60);
+        g.fillRect(getWidth() - STAT_WIDTH, 0, STAT_WIDTH, 90);
         g.setColor(Color.BLACK);
         g.setFont(statisticsFont);
         
@@ -298,6 +301,10 @@ public final class FunkyPathfindingPanel extends JPanel {
         g.drawString("Total nodes:    " + totalNodes,
                      getWidth() - STAT_WIDTH,
                      45);
+        g.drawString("Time elapsed:   " +
+                        (currentMillis - searchStartTime) + " ms.",
+                     getWidth() - STAT_WIDTH,
+                     75);
         
         if (pathfinder.pathLength != Double.NaN) {
             g.drawString("Path length:    " + (int) pathfinder.pathLength,
@@ -310,8 +317,12 @@ public final class FunkyPathfindingPanel extends JPanel {
     public void paintComponent(Graphics g) {
         setSource(sourcePoint.x, sourcePoint.y);
         setTarget(targetPoint.x, targetPoint.y);
-        writeStatistics(bufferedImage.getGraphics());
+        drawStatistics(bufferedImage.getGraphics());
         g.drawImage(bufferedImage, 0, 0, null);
+    }
+    
+    public void unmarkAsClosed(Point point) {
+        setPixel(point.x, point.y, worldColor);
     }
     
     public void markAsClosed(Point point) {

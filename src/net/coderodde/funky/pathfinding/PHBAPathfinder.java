@@ -12,10 +12,10 @@ import java.util.Set;
 import static net.coderodde.funky.pathfinding.Configuration.NODES_EXPANSIONS_PER_REPAINT;
 import static net.coderodde.funky.pathfinding.Configuration.REPAINTS_PER_PATH_DRAWING;
 
-public class PHBAPathfinder extends AbstractPathfinder {
+public class PHBAPathfinder extends AbstractPathFinder {
 
     @Override
-    public void search(Point sourcePoint, Point targetPoint) {
+    public List<Point> search(Point sourcePoint, Point targetPoint) {
         Objects.requireNonNull(sourcePoint, "The source point is null.");
         Objects.requireNonNull(targetPoint, "The target point is null.");
         
@@ -52,7 +52,7 @@ public class PHBAPathfinder extends AbstractPathfinder {
         
         while (openForward.size() > 0 && openBackward.size() > 0) {
             if (exit) {
-                return;
+                return null;
             }
             
             if (pause) {
@@ -94,7 +94,7 @@ public class PHBAPathfinder extends AbstractPathfinder {
                                              openBackward.size();
                     this.pathLength = getLength(shortestPath);
                     panel.repaint();
-                    return;
+                    return shortestPath;
                 }
             }
             
@@ -264,5 +264,7 @@ public class PHBAPathfinder extends AbstractPathfinder {
                 }
             }
         }
+        
+        return null;
     }
 }

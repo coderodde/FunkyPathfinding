@@ -4,11 +4,11 @@ import java.awt.Point;
 
 public final class PathfinderRunningThread extends Thread {
 
-    private final AbstractPathfinder pathfinder;
+    private final AbstractPathFinder pathfinder;
     private final Point sourcePoint;
     private final Point targetPoint;
     
-    public PathfinderRunningThread(AbstractPathfinder pathfinder,
+    public PathfinderRunningThread(AbstractPathFinder pathfinder,
                                    Point sourcePoint,
                                    Point targetPoint) {
         this.pathfinder = pathfinder;
@@ -21,7 +21,7 @@ public final class PathfinderRunningThread extends Thread {
         pathfinder.search(sourcePoint, targetPoint);
     }
     
-    public AbstractPathfinder getPathfinder() {
+    public AbstractPathFinder getPathfinder() {
         return pathfinder;
     }
     
